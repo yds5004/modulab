@@ -105,7 +105,7 @@ def showDataDistribution(trainData):
     return 0
 
 
-train_data, test_data = readResources('resources/movie_metadata.csv')
+train_data, test_data = readResources('movie_sentiment/resources/movie_metadata.csv')
 showDataDistribution(train_data)
 data_column_size = len(train_data[0]) - 1 # -1 is label
 train_x_data, train_y_data = getXYData(train_data, data_column_size)
