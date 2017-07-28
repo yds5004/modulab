@@ -62,12 +62,12 @@ def readResources(inFileName):
         item.append(getValue(raw_data['actor_2_facebook_likes'][i]))
         item.append(getValue(raw_data['actor_1_facebook_likes'][i]))
         item.append(getValue(raw_data['gross'][i]))
-        #item.append(getValue(raw_data['num_voted_users'][i]))
+        item.append(getValue(raw_data['num_voted_users'][i]))
         item.append(getValue(raw_data['cast_total_facebook_likes'][i]))
-        #item.append(getValue(raw_data['facenumber_in_poster'][i]))
-        #item.append(getValue(raw_data['num_user_for_reviews'][i]))
+        item.append(getValue(raw_data['facenumber_in_poster'][i]))
+        item.append(getValue(raw_data['num_user_for_reviews'][i]))
         item.append(getValue(raw_data['budget'][i]))
-        #item.append(getValue(raw_data['aspect_ratio'][i]))
+        item.append(getValue(raw_data['aspect_ratio'][i]))
         item.append(getValue(raw_data['movie_facebook_likes'][i]))
 
         imdb_score = raw_data['imdb_score'][i]
@@ -95,11 +95,18 @@ def getXYData(data, dataColumnSize):
         else:
             yData.append([0, 1])
 
-    #return np.array(xData, dtype='float'), np.array(yData, dtype='float')
     return xData, yData
+
+def showDataDistribution(trainData):
+    dataColumnSize = len(trainData[0]) - 1  # -1 is label
+    for i in range (dataColumnSize):
+        print ()
+
+    return 0
 
 
 train_data, test_data = readResources('resources/movie_metadata.csv')
+showDataDistribution(train_data)
 data_column_size = len(train_data[0]) - 1 # -1 is label
 train_x_data, train_y_data = getXYData(train_data, data_column_size)
 test_x_data, test_y_data = getXYData(test_data, data_column_size)
@@ -110,13 +117,12 @@ training_epochs = 2000
 batch_size = len(train_x_data)
 display_step = 100
 
+
 # tf Graph Input
 X = tf.placeholder(tf.float32, [None, data_column_size]) # mnist data image of shape 28*28=784
 Y = tf.placeholder(tf.float32, [None, 2]) # 0-9 digits recognition => 10 classes
 
 # Set model weights
-#W = tf.Variable(tf.zeros([13, 2]))
-#b = tf.Variable(tf.zeros([2]))
 W = tf.Variable(tf.random_uniform([data_column_size, 2], -1.0, 1.0))
 b = tf.Variable(tf.random_uniform([2], -1.0, 1.0))
 
@@ -138,10 +144,6 @@ with tf.Session() as sess:
     sess.run(init)
 
     w, b, x, y = sess.run([W, b, X, Y], feed_dict={X: train_x_data, Y: train_y_data})
-    print ("w: ", w)
-    print("b: ", b)
-    print("x: ", x)
-    print("y: ", y)
 
     # Training cycle
     for epoch in range(training_epochs):
@@ -169,5 +171,3 @@ with tf.Session() as sess:
         else:
             wrong += 1
     print ("accuracy: ", float(correct)/float(correct + wrong))
-    print ("result: ", result[0][0], result[0][1], result[0][2], result[0][3], result[0][4], result[0][5], result[0][6], result[0][7], result[0][8], result[0][9])
-    print("y: ", answer[0], answer[1], answer[2], answer[3], answer[4], answer[5], answer[6], answer[7], answer[8], answer[9])
