@@ -13,7 +13,8 @@ kaggle에서 다운받은 영화 데이터를 사용했다.
 imdb_score가 7보다 작으면 부정, 7보다 크거나 같으면 긍정 평가로 간주하며,
 아래 feature를 이용하여 logistic regression을 수행한다.
 
-L2 Regulazation, 1 Hidden Layer, RELUs, dropout
+방법: L2 Regulazation, 1 Hidden Layer, RELUs, dropout
+(참고: http://www.ritchieng.com/machine-learning/deep-learning/tensorflow/regularization/)
 """
 
 POSITIVE_THRETHOLD = 7.0
