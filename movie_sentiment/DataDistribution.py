@@ -38,19 +38,19 @@ def setIdToValue(value):
 whole_Movie_Data['content_rating']=whole_Movie_Data['content_rating'].apply(setIdToValue)
 
 # 사용할 title로만 다시 데이터를 만듬
-MovieData=whole_Movie_Data[data_Title]
+movieData=whole_Movie_Data[data_Title]
 
 # 데이터 확인
 print(whole_Movie_Data.head())
-print(MovieData.head(1))
+print(movieData.head(1))
 
 # Positive 데이터
 Positive_Th=5
 
-# 전체 데이터 중에서 MovieData의 imdb_score가 Positive Threthold보다 큰 데이터만 확보
-Pos_Data=whole_Movie_Data[MovieData['imdb_score']>Positive_Th]
-# 전체 데이터 중에서 MovieData의 imdb_score가 Positive Threthold보다 작은 데이터만 확보
-Neg_Data=whole_Movie_Data[MovieData['imdb_score']<=Positive_Th]
+# 전체 데이터 중에서 movieData의 imdb_score가 Positive Threthold보다 큰 데이터만 확보
+Pos_Data=whole_Movie_Data[movieData['imdb_score']>Positive_Th]
+# 전체 데이터 중에서 movieData의 imdb_score가 Positive Threthold보다 작은 데이터만 확보
+Neg_Data=whole_Movie_Data[movieData['imdb_score']<=Positive_Th]
 
 # 사용할 데이터의 필드 수
 num_item=len(data_Title)

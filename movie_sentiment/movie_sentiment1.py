@@ -13,7 +13,7 @@ kaggle에서 다운받은 영화 데이터를 사용했다.
 imdb_score가 7보다 작으면 부정, 7보다 크거나 같으면 긍정 평가로 간주하며,
 아래 feature를 이용하여 logistic regression을 수행한다.
 
-L2 Regulazation
+L2 Regulazation, 1 Hidden Layer, RELUs
 """
 
 POSITIVE_THRETHOLD = 7.0
@@ -105,27 +105,30 @@ test_x_data, test_y_data = getXYData(test_data_frame, data_Title)
 # Parameters
 learning_rate = 0.01
 beta = 0.01
-training_epochs = 2500
+training_epochs = 1500
 batch_size = len(train_x_data)
 display_step = 100
-
+num_nodes = 1024
 
 # tf Graph Input
 X = tf.placeholder(tf.float32, [None, len(data_Title)]) # mnist data image of shape 28*28=784
 Y = tf.placeholder(tf.float32, [None, 2]) # 0-9 digits recognition => 10 classes
 
 # Set model weights
-W = tf.Variable(tf.random_uniform([len(data_Title), 2], -1.0, 1.0))
-b = tf.Variable(tf.random_uniform([2], -1.0, 1.0))
+W1 = tf.Variable(tf.random_uniform([len(data_Title), num_nodes], -1.0, 1.0))
+W2 = tf.Variable(tf.random_uniform([num_nodes, 2], -1.0, 1.0))
+b1 = tf.Variable(tf.random_uniform([num_nodes], -1.0, 1.0))
+b2 = tf.Variable(tf.random_uniform([2], -1.0, 1.0))
 
 # Construct model
-prediction = tf.nn.softmax(tf.matmul(X, W) + b)
+prediction1 = tf.nn.relu(tf.matmul(X, W1) + b1)
+prediction = tf.nn.softmax(tf.matmul(prediction1, W2) + b2)
 
 # Minimize error using cross entropy
 #loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(prediction, Y))
 loss = tf.reduce_mean(-tf.reduce_sum(Y*tf.log(prediction), reduction_indices=1))
-regularizer = tf.nn.l2_loss(W)
-loss = tf.reduce_mean(loss + beta * regularizer)
+regularizers = tf.nn.l2_loss(W1) + tf.nn.l2_loss(W2)
+loss = tf.reduce_mean(loss + beta * regularizers)
 
 # Gradient Descent
 #optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
