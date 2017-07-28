@@ -13,7 +13,7 @@ kaggle에서 다운받은 영화 데이터를 사용했다.
 imdb_score가 7보다 작으면 부정, 7보다 크거나 같으면 긍정 평가로 간주하며,
 아래 feature를 이용하여 logistic regression을 수행한다.
 
-L2 Regulazation, 5 Hidden Layer, RELUs, dropout
+(전체적으로 Pandas를 사용했지만, 맞게 쓴 것인지는 의문)
 """
 
 POSITIVE_THRETHOLD = 7.0
@@ -104,49 +104,28 @@ test_x_data, test_y_data = getXYData(test_data_frame, data_Title)
 
 # Parameters
 learning_rate = 0.01
-beta = 0.001
-training_epochs = 1500
+beta = 0.01
+training_epochs = 2500
 batch_size = len(train_x_data)
 display_step = 100
-keep_drop_out = 0.8
-hidden_nodes_1 = 1024
-hidden_nodes_2 = int(hidden_nodes_1 * 0.5)
-hidden_nodes_3 = int(hidden_nodes_1 * np.power(0.5, 2))
-hidden_nodes_4 = int(hidden_nodes_1 * np.power(0.5, 3))
-hidden_nodes_5 = int(hidden_nodes_1 * np.power(0.5, 4))
+
 
 # tf Graph Input
 X = tf.placeholder(tf.float32, [None, len(data_Title)]) # mnist data image of shape 28*28=784
 Y = tf.placeholder(tf.float32, [None, 2]) # 0-9 digits recognition => 10 classes
-keep_prob = tf.placeholder("float")
 
 # Set model weights
-W1 = tf.Variable(tf.truncated_normal([len(data_Title), hidden_nodes_1], stddev=math.sqrt(2.0/(len(data_Title)))))
-W2 = tf.Variable(tf.truncated_normal([hidden_nodes_1, hidden_nodes_2], stddev=math.sqrt(2.0/hidden_nodes_1)))
-W3 = tf.Variable(tf.truncated_normal([hidden_nodes_2, hidden_nodes_3], stddev=math.sqrt(2.0/hidden_nodes_2)))
-W4 = tf.Variable(tf.truncated_normal([hidden_nodes_3, hidden_nodes_4], stddev=math.sqrt(2.0/hidden_nodes_3)))
-W5 = tf.Variable(tf.truncated_normal([hidden_nodes_4, hidden_nodes_5], stddev=math.sqrt(2.0/hidden_nodes_4)))
-W6 = tf.Variable(tf.truncated_normal([hidden_nodes_5, 2], stddev=math.sqrt(2.0/hidden_nodes_5)))
-b1 = tf.Variable(tf.random_uniform([hidden_nodes_1], -1.0, 1.0))
-b2 = tf.Variable(tf.random_uniform([hidden_nodes_2], -1.0, 1.0))
-b3 = tf.Variable(tf.random_uniform([hidden_nodes_3], -1.0, 1.0))
-b4 = tf.Variable(tf.random_uniform([hidden_nodes_4], -1.0, 1.0))
-b5 = tf.Variable(tf.random_uniform([hidden_nodes_5], -1.0, 1.0))
-b6 = tf.Variable(tf.random_uniform([2], -1.0, 1.0))
+W = tf.Variable(tf.random_uniform([len(data_Title), 2], -1.0, 1.0))
+b = tf.Variable(tf.random_uniform([2], -1.0, 1.0))
 
 # Construct model
-prediction1 = tf.nn.dropout(tf.nn.relu(tf.matmul(X, W1) + b1), keep_prob)
-prediction2 = tf.nn.dropout(tf.nn.relu(tf.matmul(prediction1, W2) + b2), keep_prob)
-prediction3 = tf.nn.dropout(tf.nn.relu(tf.matmul(prediction2, W3) + b3), keep_prob)
-prediction4 = tf.nn.dropout(tf.nn.relu(tf.matmul(prediction3, W4) + b4), keep_prob)
-prediction5 = tf.nn.dropout(tf.nn.relu(tf.matmul(prediction4, W5) + b5), keep_prob)
-prediction = tf.nn.softmax(tf.matmul(prediction5, W6) + b6)
+prediction = tf.nn.softmax(tf.matmul(X, W) + b)
 
 # Minimize error using cross entropy
 #loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(prediction, Y))
 loss = tf.reduce_mean(-tf.reduce_sum(Y*tf.log(prediction), reduction_indices=1))
-regularizers = tf.nn.l2_loss(W1) + tf.nn.l2_loss(W2) + tf.nn.l2_loss(W3) + tf.nn.l2_loss(W4) + tf.nn.l2_loss(W5) + tf.nn.l2_loss(W6)
-loss = tf.reduce_mean(loss + beta * regularizers)
+regularizer = tf.nn.l2_loss(W)
+loss = tf.reduce_mean(loss + beta * regularizer)
 
 # Gradient Descent
 #optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
@@ -163,7 +142,7 @@ with tf.Session() as sess:
     for epoch in range(training_epochs):
         avg_cost = 0.
         # Loop over all batches
-        _, c = sess.run([optimizer, loss], feed_dict={X: train_x_data, Y: train_y_data, keep_prob : keep_drop_out})
+        _, c = sess.run([optimizer, loss], feed_dict={X: train_x_data, Y: train_y_data})
 
         if (epoch+1) % display_step == 0:
             print ("Epoch:", '%04d' % (epoch+1), "loss=", "{:.9f}".format(c))
@@ -177,7 +156,7 @@ with tf.Session() as sess:
     correct = 0
     wrong = 0
     # prediction
-    result = sess.run([tf.argmax(prediction, 1)], feed_dict={X: test_x_data, keep_prob : 1.0})
+    result = sess.run([tf.argmax(prediction, 1)], feed_dict={X: test_x_data})
     answer = np.argmax(test_y_data, 1)
     for i in range(len(answer)):
         if (answer[i] == result[0][i]):

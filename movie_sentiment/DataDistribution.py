@@ -1,4 +1,7 @@
+"""
 # made by 도날드원
+# Pandas를 익히고 데이터 분포를 확인하기 위한 샘플
+"""
 
 import numpy as np
 import pandas as pd
