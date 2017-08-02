@@ -20,7 +20,7 @@ class Tokenizer(object):
     @staticmethod
     def review_to_words(review, stopwords):
         review_text = BeautifulSoup(review, "html.parser").get_text()
-        #review_text = re.sub("[^a-zA-Z]", " ", review_text)
+        review_text = re.sub("[^a-zA-Z]", " ", review_text)
         words = review_text.lower().split()
 
         words = [w for w in words if not w in stopwords]
