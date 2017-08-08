@@ -106,7 +106,7 @@ if __name__ == '__main__':
     print ("Parsing sentences from training set")
     for review in train["review"]:
         sentences.append( Tokenizer.review_to_words(review, stopwords) )
-    showDataLength(sentences)
+    #showDataLength(sentences)
 
     vectorSize = 300
     w2v_file = "resources/model/300features_40minwords_10context_skipgram.w2v"
@@ -119,7 +119,6 @@ if __name__ == '__main__':
     trainDataVecs = getAvgFeatureVecs(getCleanReviews(train, stopwords), model, vectorSize)
 
     print ("Creating average feature vecs for test reviews")
-
     testDataVecs = getAvgFeatureVecs(getCleanReviews(test, stopwords), model, vectorSize)
 
     # ****** Fit a random forest to the training set, then make predictions
